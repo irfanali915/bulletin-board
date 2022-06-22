@@ -56,7 +56,10 @@ namespace BulletinBoard
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             services
-                .AddMvc(options => { options.Filters.Add(typeof(ExampleActionFilter)); })
+                .AddMvc(options => {
+                    options.EnableEndpointRouting = false;
+                    options.Filters.Add(typeof(ExampleActionFilter));
+                })
                 .AddControllersAsServices();
 
             // Autofac
@@ -73,7 +76,7 @@ namespace BulletinBoard
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDirectoryBrowser();
+                //app.UseDirectoryBrowser();
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -89,9 +92,11 @@ namespace BulletinBoard
             migrationManager.Apply().Wait();
             seedService.Seed().Wait();
             
-            app.UseEndpoints(endpoints =>
+            app.UseMvc(routes =>
             {
-                endpoints.MapControllers();
+                routes.MapRoute(
+                   name: "default",
+                   template: "{controller=JobOffer}/{action=Popular}/{id?}");
             });
         }
     }
